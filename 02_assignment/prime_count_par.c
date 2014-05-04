@@ -75,23 +75,12 @@ void * PrimeCountThread(void *ptr)
 
 				shared_start_num = shared_start_num + arg->chunk_size;
 			}
-			else if(shared_end_num == (shared_start_num + arg->chunk_size - 1))
+			else if(shared_end_num <= (shared_start_num + arg->chunk_size - 1))
 			{
 				a = shared_start_num;
 				b = shared_end_num;
 
 				global_cnt_finished = true;
-			}
-			else if(shared_end_num < (shared_start_num + arg->chunk_size - 1))
-			{
-				a = shared_start_num;
-				b = shared_end_num;
-
-				global_cnt_finished = true;
-			}
-			else
-			{
-				printf("\nUnexpected new shared_end_num!\n");
 			}
 		}
 		else
@@ -107,7 +96,6 @@ void * PrimeCountThread(void *ptr)
 
 unsigned long prime_count(unsigned long a, unsigned long b, unsigned long num_threads, unsigned long chunk_size)
 {
-	global_cnt_finished = false;
 	unsigned long start_num = a;
 	unsigned long end_num = b;
 	unsigned long global_prime_cnt = 0;
@@ -122,6 +110,7 @@ unsigned long prime_count(unsigned long a, unsigned long b, unsigned long num_th
 
 	shared_start_num = start_num;
 	shared_end_num = end_num;
+	global_cnt_finished = false;
 
 	// Now that we have the range, begin launching threads
 	thread 		= malloc(num_threads*sizeof(*thread));
@@ -163,10 +152,6 @@ unsigned long prime_count(unsigned long a, unsigned long b, unsigned long num_th
 			else if(end_num < (start_num + (i+1)*chunk_size - 1))
 			{
 				thread_arg[i].chunk_size = end_num - (start_num + i*chunk_size) + 1;
-			}
-			else
-			{
-				printf("\nUnexpected new start_num!\n");
 			}
 
 			thread_arg[i].thread_id = i;
