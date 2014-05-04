@@ -2,7 +2,7 @@
 #include <math.h>
 #include <stdbool.h>
 
-bool IsPrime(unsigned long test_num)
+bool inline IsPrime(unsigned long test_num)
 {
 	bool is_prime = true;
 
@@ -16,25 +16,7 @@ bool IsPrime(unsigned long test_num)
 			break;
 		}
 	}
-	/*
-	if(test_num != 1)
-	{
-		float k_max = sqrtf(test_num);
 
-		for(unsigned long k = 2; k <= k_max; k++)
-		{
-			if(test_num % k == 0)
-			{
-				is_prime = false;
-				break;
-			}
-		}
-	}
-	else
-	{
-		is_prime = false;
-	}
-*/
 	return is_prime;
 }
 
@@ -43,16 +25,24 @@ unsigned long prime_count(unsigned long a, unsigned long b, unsigned long num_th
 	unsigned long prime_cnt = 0;
 	bool test_return = false;
 
-	if(a % 2 == 0)
+	// Skip the first number if even
+	if(a % 2 == 0 && a != 2)
 	{
 		a++;
 	}
+	else if(a % 2 == 0 && a == 2)
+	{
+		prime_cnt++;
+		a++;
+	}
 
+	// Skip the last number if even
 	if(b % 2 == 0)
 	{
 		b--;
 	}
 
+	// Iterate through provided range
 	while(a <= b)
 	{
 		test_return = IsPrime(a);
@@ -62,7 +52,7 @@ unsigned long prime_count(unsigned long a, unsigned long b, unsigned long num_th
 			prime_cnt++;
 		}
 
-		a += 2;
+		a += 2;  // Only check odd numbers
 	}
 
 	return prime_cnt;
