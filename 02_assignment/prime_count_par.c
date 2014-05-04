@@ -4,6 +4,9 @@
 #include <stdbool.h>
 #include <pthread.h>
 
+unsigned long shared_start_num;
+unsigned long shared_end_num;
+bool global_cnt_finished;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 struct pthread_args
@@ -44,94 +47,140 @@ void * PrimeCountThread(void *ptr)
 {
 	struct pthread_args *arg = ptr;
 	unsigned long a = arg->start_num;
-	unsigned long b = arg->start_num + (arg->chunk_size-1);
+	unsigned long b = arg->start_num + arg->chunk_size - 1;
 	bool is_prime = false;
-	bool global_cnt_finished = true;
+	bool local_cnt_finished = false;
 
 	do
 	{
 		// Iterate through given range
 		while(a <= b)
 		{
-			//printf("\n a=%u\n", (int)a);
 			is_prime = IsPrime(a++);
 
 			if(is_prime == true)
 			{
-				//printf("\n   prime=%u\n", (int)(a-1));
 				arg->local_prime_cnt += 1;
 			}
 		}
-		//printf("\n");
 
-		// Check if global range is complete.
-		// If not, grab a chunk and repeat, else return.
-		/*pthread_mutex_lock(&mutex);
+		// Check if global range is complete
+		pthread_mutex_lock(&mutex);
+		if(global_cnt_finished == false)
+		{
+			if(shared_end_num > (shared_start_num + arg->chunk_size - 1))
+			{
+				a = shared_start_num;
+				b = shared_start_num + arg->chunk_size - 1;
 
-		pthread_mutex_unlock(&mutex);*/
+				shared_start_num = shared_start_num + arg->chunk_size;
+			}
+			else if(shared_end_num == (shared_start_num + arg->chunk_size - 1))
+			{
+				a = shared_start_num;
+				b = shared_end_num;
+
+				global_cnt_finished = true;
+			}
+			else if(shared_end_num < (shared_start_num + arg->chunk_size - 1))
+			{
+				a = shared_start_num;
+				b = shared_end_num;
+
+				global_cnt_finished = true;
+			}
+			else
+			{
+				printf("\nUnexpected new shared_end_num!\n");
+			}
+		}
+		else
+		{
+			local_cnt_finished = true;
+		}
+		pthread_mutex_unlock(&mutex);
 	}
-	while(global_cnt_finished == false);
+	while(local_cnt_finished == false);
 
 	return 0;
 }
 
 unsigned long prime_count(unsigned long a, unsigned long b, unsigned long num_threads, unsigned long chunk_size)
 {
+	global_cnt_finished = false;
 	unsigned long start_num = a;
 	unsigned long end_num = b;
 	unsigned long global_prime_cnt = 0;
 	pthread_t *thread;
 	struct pthread_args *thread_arg;
 
-	// Skip the first number if even
-	if(start_num % 2 == 0 && start_num != 2)
+	// Don't check zero
+	if(start_num == 0)
 	{
-		start_num++;
-	}
-	else if(start_num % 2 == 0 && start_num == 2)
-	{
-		global_prime_cnt++;
-		start_num++;
+		start_num += 2;
 	}
 
-	// Skip the last number if even
-	if(end_num % 2 == 0)
-	{
-		end_num--;
-	}
+	shared_start_num = start_num;
+	shared_end_num = end_num;
 
 	// Now that we have the range, begin launching threads
 	thread 		= malloc(num_threads*sizeof(*thread));
 	thread_arg 	= malloc(num_threads*sizeof(*thread_arg));
 
-	// Launch multiple threads
-	for(unsigned long i = 0; i < num_threads; i++)
+	if((num_threads*chunk_size) <= (shared_end_num-shared_start_num))  // Dynamic work distribution
 	{
-		// Adjust the chunk size according to the remaining range values
-		if(end_num >= (start_num + (i+1)*chunk_size - 1))
+		shared_start_num = shared_start_num + num_threads*chunk_size;
+
+		// Launch multiple threads
+		for(unsigned long i = 0; i < num_threads; i++)
 		{
+			thread_arg[i].thread_id = i;
+			thread_arg[i].start_num = start_num + i*chunk_size;
 			thread_arg[i].chunk_size = chunk_size;
-		}
-		else if(end_num < (start_num + (i+1)*chunk_size - 1))
-		{
-			thread_arg[i].chunk_size = end_num - (start_num + i*chunk_size) + 1;
-		}
-		else
-		{
-			printf("\nUnexpected new start_num!\n");
+			thread_arg[i].local_prime_cnt = 0;
+			pthread_create(thread+i, 0, &PrimeCountThread, thread_arg+i);
 		}
 
-		thread_arg[i].thread_id = i;
-		thread_arg[i].start_num = start_num + i*chunk_size;
-		thread_arg[i].local_prime_cnt = 0;
-		pthread_create(thread+i, 0, &PrimeCountThread, thread_arg+i);
+		// Join multiple threads
+		for(unsigned long i = 0; i < num_threads; i++)
+		{
+			pthread_join(thread[i], 0);
+			global_prime_cnt += thread_arg[i].local_prime_cnt;
+		}
 	}
-
-	// Join multiple threads
-	for(unsigned long i = 0; i < num_threads; i++)
+	else  // Static work distribution
 	{
-		pthread_join(thread[i], 0);
-		global_prime_cnt += thread_arg[i].local_prime_cnt;
+		global_cnt_finished = true;
+
+		// Launch multiple threads
+		for(unsigned long i = 0; i < num_threads; i++)
+		{
+			// Adjust the chunk size according to the remaining range values
+			if(end_num >= (start_num + (i+1)*chunk_size - 1))
+			{
+				thread_arg[i].chunk_size = chunk_size;
+			}
+			else if(end_num < (start_num + (i+1)*chunk_size - 1))
+			{
+				thread_arg[i].chunk_size = end_num - (start_num + i*chunk_size) + 1;
+			}
+			else
+			{
+				printf("\nUnexpected new start_num!\n");
+			}
+
+			thread_arg[i].thread_id = i;
+			thread_arg[i].start_num = start_num + i*chunk_size;
+			thread_arg[i].local_prime_cnt = 0;
+			pthread_create(thread+i, 0, &PrimeCountThread, thread_arg+i);
+		}
+
+		// Join multiple threads
+		for(unsigned long i = 0; i < num_threads; i++)
+		{
+			pthread_join(thread[i], 0);
+			global_prime_cnt += thread_arg[i].local_prime_cnt;
+		}
 	}
 
 	free(thread);
