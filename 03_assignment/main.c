@@ -58,13 +58,13 @@ void r_pentomino(unsigned char *grid, unsigned int dim_x, unsigned int dim_y, un
 {
 	unsigned char (*c_grid)[dim_x] = (unsigned char (*)[dim_x])grid;
 
-	c_grid[(y - 1) % dim_y][(x - 0) % dim_x] = 1;
-	c_grid[(y - 1) % dim_y][(x + 1) % dim_x] = 1;
+	c_grid[(y + dim_y - 1) % dim_y][(x + dim_x - 0) % dim_x] = 1;
+	c_grid[(y + dim_y - 1) % dim_y][(x + dim_x + 1) % dim_x] = 1;
 
-	c_grid[(y - 0) % dim_y][(x - 1) % dim_x] = 1;
-	c_grid[(y - 0) % dim_y][(x - 0) % dim_x] = 1;
+	c_grid[(y + dim_y - 0) % dim_y][(x + dim_x - 1) % dim_x] = 1;
+	c_grid[(y + dim_y - 0) % dim_y][(x + dim_x - 0) % dim_x] = 1;
 
-	c_grid[(y + 1) % dim_y][(x - 0) % dim_x] = 1;
+	c_grid[(y + dim_y + 1) % dim_y][(x + dim_x - 0) % dim_x] = 1;
 }
 
 int main(int argc, char *argv[])

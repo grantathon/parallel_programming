@@ -20,6 +20,7 @@ OBJ_SOL1 = main.o $(NAME)_par_sol1.o helper.o
 OBJ_SOL2 = main.o $(NAME)_par_sol2.o helper.o
 OBJ_UNIT = unit_test.o $(NAME)_par.o $(NAME)_ref.o helper.o
 OBJ_COUNT = pthread_count.o $(NAME)_par.o
+OBJ_PERF = performance_test.o $(NAME)_par.o helper.o
 
 all: sequential parallel $(NAME)_par.o
 
@@ -44,6 +45,9 @@ unit_test: $(OBJ_UNIT)
 	
 pthread_count: $(OBJ_COUNT)
 	$(CC) -o $@ $(OBJ_COUNT) $(CFLAGS) $(LDFLAGS) 
+	
+performance_test: $(OBJ_PERF)
+	$(CC) -o $@ $(OBJ_PERF) $(CFLAGS) $(LDFLAGS)
  
 %.d: %.c
 	@set -e; rm -f $@; \
@@ -52,7 +56,7 @@ pthread_count: $(OBJ_COUNT)
 	rm -f $@.$$$$
 
 clean:
-	rm -f $(NAME)_seq $(NAME)_par $(NAME)_par_sol1 $(NAME)_par_sol2 unit_test pthread_count *.o *.d
+	rm -f $(NAME)_seq $(NAME)_par $(NAME)_par_sol1 $(NAME)_par_sol2 unit_test pthread_count performance_test *.o *.d
 	
 -include $(SRC:.c=.d)
 
