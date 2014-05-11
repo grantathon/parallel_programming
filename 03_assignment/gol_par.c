@@ -5,12 +5,14 @@
 struct pthread_args
 {
 	unsigned long 	thread_id;
-	unsigned long 	total_thread_cnt;
-	unsigned long 	num_of_rows;
+	unsigned long 	num_threads;
+	unsigned long 	num_rows;
+	unsigned long 	time_steps;
 	unsigned long 	dim_x;
 	unsigned long 	dim_y;
 	unsigned char *grid_in;
 	unsigned char *grid_out;
+	pthread_barrier_t *barrier;
 };
 
 void evolve(unsigned char *grid_in, unsigned char *grid_out, unsigned int dim_x, unsigned int dim_y, unsigned int x, unsigned int y)
@@ -171,19 +173,27 @@ unsigned int cells_alive(unsigned char *grid, unsigned int dim_x, unsigned int d
 void * gol_row_wise(void *ptr)
 {
 	struct pthread_args *arg = ptr;
-	const unsigned int dim_x = arg->dim_x;
-	const unsigned int dim_y = arg->dim_y;
-	const unsigned int total_thread_cnt = arg->total_thread_cnt;
-	const unsigned int y_max = arg->num_of_rows*total_thread_cnt;
+	const unsigned long dim_x = arg->dim_x;
+	const unsigned long dim_y = arg->dim_y;
+	const unsigned long time_steps = arg->time_steps;
+	const unsigned long num_threads = arg->num_threads;
+	const unsigned long y_max = arg->num_rows*num_threads;
 	unsigned char *grid_in = arg->grid_in;
 	unsigned char *grid_out = arg->grid_out;
 
-	for(unsigned int y = arg->thread_id; y < y_max; y += total_thread_cnt)
+	for (int t = 0; t < time_steps; t++)
 	{
-		for(unsigned int x = 0; x < dim_x; x++)
+		for(unsigned long y = arg->thread_id; y < y_max; y += num_threads)
 		{
-			evolve(grid_in, grid_out, dim_x, dim_y, x, y);
+			for(unsigned long x = 0; x < dim_x; x++)
+			{
+				evolve(grid_in, grid_out, dim_x, dim_y, x, y);
+			}
 		}
+
+		// Wait for all threads to finish before swapping grids
+		pthread_barrier_wait(arg->barrier);
+		swap(&grid_in, &grid_out);
 	}
 
 	return 0;
@@ -193,6 +203,11 @@ unsigned int gol(unsigned char *grid, unsigned int dim_x, unsigned int dim_y, un
 {
 	unsigned char *grid_in, *grid_out, *grid_tmp;
 	size_t size = sizeof(unsigned char) * dim_x * dim_y;
+	const unsigned long rows_per_thread = dim_y / num_threads;
+	const unsigned long rem_rows = dim_y % num_threads;
+	pthread_t *thread;
+	struct pthread_args *thread_arg;
+	pthread_barrier_t barrier;
 
 	grid_tmp = malloc(size);
 	if(grid_tmp == NULL)
@@ -203,23 +218,68 @@ unsigned int gol(unsigned char *grid, unsigned int dim_x, unsigned int dim_y, un
 	grid_in = grid;
 	grid_out = grid_tmp;
 
-	for (int t = 0; t < time_steps; ++t)
+	// Distribute the number of rows to each thread (if we have more rows than threads)
+	if(num_threads < dim_y)
 	{
-		// TODO: Parallelize the loops below by distributing an even
-		//	number of rows to the available threads. If there are more
-		// 	threads than rows, only launch the necessary amount of threads.
-		//	If there is an uneven number of rows per thread (i.e., rowCnt % threadCnt != 0)
-		//	then distribute the remaining rows to the first and, if necessary, subsequent
-		//	threads. Launch threads here.
+		thread 		= malloc(num_threads*sizeof(*thread));
+		thread_arg 	= malloc(num_threads*sizeof(*thread_arg));
 
+		for(unsigned long i = 0; i < num_threads; i++)
+		{
+			thread_arg[i].num_rows = rows_per_thread;
+		}
 
-		// TODO: Put thread barrier here.
-		swap(&grid_in, &grid_out);
+		// Assign unallocated rows to first threads if necessary
+		if(rem_rows != 0)
+		{
+			for(unsigned long i = 0; i < rem_rows; i++)
+			{
+				thread_arg[i].num_rows += 1;
+			}
+		}
+
+		pthread_barrier_init(&barrier, 0, num_threads);
 	}
+	else  // More or equal number of threads than rows
+	{
+		num_threads = dim_y;
+		thread 		= malloc(num_threads*sizeof(*thread));
+		thread_arg 	= malloc(num_threads*sizeof(*thread_arg));
+
+		for(unsigned long i = 0; i < num_threads; i++)
+		{
+			thread_arg[i].num_rows = 1;
+		}
+
+		pthread_barrier_init(&barrier, 0, num_threads);
+	}
+
+	// Launch threads
+	for(unsigned long i = 0; i < num_threads; i++)
+	{
+		thread_arg[i].thread_id = i;
+		thread_arg[i].dim_x = dim_x;
+		thread_arg[i].dim_y = dim_y;
+		thread_arg[i].num_threads = num_threads;
+		thread_arg[i].time_steps = time_steps;
+		thread_arg[i].grid_in = grid_in;
+		thread_arg[i].grid_out = grid_out;
+		thread_arg[i].barrier = &barrier;
+		pthread_create(thread+i, 0, &gol_row_wise, thread_arg+i);
+	}
+
+	// Join threads and destroy barrier
+	for(unsigned long i = 0; i < num_threads; i++)
+	{
+		pthread_join(thread[i], 0);
+	}
+	pthread_barrier_destroy(&barrier);
 
 	if(grid != grid_in)
 		memcpy(grid, grid_in, size);
 
+	free(thread);
+	free(thread_arg);
 	free(grid_tmp);
 
 	return cells_alive(grid, dim_x, dim_y);
