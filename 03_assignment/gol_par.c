@@ -11,8 +11,8 @@ struct pthread_args
 	unsigned long 	time_steps;
 	unsigned long 	dim_x;
 	unsigned long 	dim_y;
-	unsigned char **grid_in;
-	unsigned char **grid_out;
+	unsigned char *grid_in;
+	unsigned char *grid_out;
 	pthread_barrier_t *barrier;
 };
 
@@ -174,11 +174,8 @@ unsigned int cells_alive(unsigned char *grid, unsigned int dim_x, unsigned int d
 void * gol_row_wise(void *ptr)
 {
 	struct pthread_args *arg = ptr;
-//	size_t size = sizeof(unsigned char) * arg->dim_x * arg->dim_y;
-//	unsigned char *grid_out = malloc(size);
+	size_t size = sizeof(unsigned char) * arg->dim_x * arg->dim_y;
 	const unsigned long y_max = arg->num_rows*arg->num_threads;
-
-//	memcpy(grid_out, *arg->grid_in, size);
 
 	for (unsigned long t = 0; t < arg->time_steps; t++)
 	{
@@ -186,27 +183,19 @@ void * gol_row_wise(void *ptr)
 		{
 			for(unsigned long x = 0; x < arg->dim_x; x++)
 			{
-				evolve(*arg->grid_in, *arg->grid_out, arg->dim_x, arg->dim_y, x, y);
-//				evolve(*arg->grid_in, grid_out, arg->dim_x, arg->dim_y, x, y);
+				evolve(arg->grid_in, arg->grid_out, arg->dim_x, arg->dim_y, x, y);
 			}
 		}
 
-//		pthread_barrier_wait(arg->barrier);
-//		if(arg->thread_id == 0)
-//		{
-//			memcpy(*arg->grid_in, grid_out, size);
-//		}
-//		pthread_barrier_wait(arg->barrier);
-
 		pthread_barrier_wait(arg->barrier);
-		if(arg->thread_id == 0)
-		{
-			swap(arg->grid_in, arg->grid_out);
-		}
-		pthread_barrier_wait(arg->barrier);
+		swap(&arg->grid_in, &arg->grid_out);
 	}
 
-//	free(grid_out);
+	if(arg->time_steps % 2 != 0)
+	{
+		memcpy(arg->grid_out, arg->grid_in, size);
+	}
+
 	return 0;
 }
 
@@ -271,8 +260,8 @@ unsigned int gol(unsigned char *grid, unsigned int dim_x, unsigned int dim_y, un
 		thread_arg[i].dim_y = dim_y;
 		thread_arg[i].num_threads = num_threads;
 		thread_arg[i].time_steps = time_steps;
-		thread_arg[i].grid_in = &grid_in;
-		thread_arg[i].grid_out = &grid_out;
+		thread_arg[i].grid_in = grid_in;
+		thread_arg[i].grid_out = grid_out;
 		thread_arg[i].barrier = &barrier;
 		pthread_create(thread+i, 0, &gol_row_wise, thread_arg+i);
 	}
@@ -282,9 +271,6 @@ unsigned int gol(unsigned char *grid, unsigned int dim_x, unsigned int dim_y, un
 	{
 		pthread_join(thread[i], 0);
 	}
-
-	if(grid != grid_in)
-		memcpy(grid, grid_in, size);
 
 	pthread_barrier_destroy(&barrier);
 	free(thread);
