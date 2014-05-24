@@ -9,3 +9,4 @@ Assignments
 1. Estimate PI using statically distributed pthreads.
 2. Count prime numbers using dynamically distributed pthreads.
 3. Simulate Conway's Game of Life using statically distributed pthreads.
+4. (a) Estimate PI and (b) count prime numbers using OpenMP.
