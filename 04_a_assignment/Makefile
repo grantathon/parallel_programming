@@ -1,7 +1,7 @@
 NAME = pi_series
 CC = gcc
-CFLAGS = -std=gnu99 -pthread -fstrict-overflow -Werror -Wall -Wshadow -Wstrict-overflow=5 -pedantic
-LDFLAGS = -lm -lrt -lpthread
+CFLAGS = -std=gnu99 -pthread -fstrict-overflow -Werror -Wall -Wshadow -Wstrict-overflow=5 -pedantic -lgomp -fopenmp
+LDFLAGS = -lm -lrt -lpthread -lgomp -fopenmp
 
 #Compiler flags
 #if mode variable is empty, setting release build mode
