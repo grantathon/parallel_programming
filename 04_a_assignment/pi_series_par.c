@@ -8,13 +8,10 @@ double pi_series(long num_terms, long num_threads)
 	// Set number of threads to launch
 	omp_set_num_threads(num_threads);
 
-	#pragma omp parallel
+	#pragma omp parallel for reduction(+: sum)
+	for (long n = 0; n < num_terms; n++)
 	{
-		#pragma omp for reduction(+: sum)
-		for (long n = 0; n < num_terms; n++)
-		{
-			sum += ((4.0 - 8*(n & 1)) / (2*n + 1));
-		}
+		sum += ((4.0 - 8*(n & 1)) / (2*n + 1));
 	}
 
 	return sum;
