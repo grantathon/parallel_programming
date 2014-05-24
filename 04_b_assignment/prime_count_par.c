@@ -44,7 +44,7 @@ unsigned long prime_count(unsigned long a, unsigned long b, unsigned long num_th
 	omp_set_num_threads(num_threads);
 
 	// Iterate through provided range
-	#pragma omp parallel for private(test_return) reduction(+: prime_cnt)
+	#pragma omp parallel for schedule(dynamic, chunk_size) private(test_return) reduction(+: prime_cnt)
 	for(unsigned long i = a; i <= b; i++)
 	{
 		test_return = IsPrime(i);
