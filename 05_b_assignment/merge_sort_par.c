@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <omp.h>
 
 #include "merge_sort.h"
 #include "helper.h"
@@ -27,7 +28,7 @@ void merge(int64_t *a, int64_t *b, size_t begin, size_t mid, size_t end)
 		b[idx++] = a[r++];
 }
 
-void split(int64_t *a, int64_t *b, size_t begin, size_t end, int threshold)
+void split(int64_t *a, int64_t *b, size_t begin, size_t end)
 {
 	if(end - begin < 2)
 		return;
@@ -36,8 +37,17 @@ void split(int64_t *a, int64_t *b, size_t begin, size_t end, int threshold)
 
 	size_t mid = (begin + end) / 2;
 
-	split(a, b, begin, mid, threshold);
-	split(a, b, mid, end, threshold);
+	#pragma omp parallel shared(a, b) firstprivate(begin, mid, end)
+	{
+		#pragma omp sections
+		{
+			#pragma omp section
+			split(a, b, begin, mid);
+
+			#pragma omp section
+			split(a, b, mid, end);
+		}
+	}
 
 	merge(a, b, begin, mid, end);
 }
@@ -52,7 +62,11 @@ void merge_sort(int64_t *a, size_t num_elements, int num_threads, int threshold)
 
 	memcpy(b, a, size);
 
-	split(a, b, 0, num_elements, threshold);
+	omp_set_nested(0);
+	omp_set_max_active_levels(threshold);
+	omp_set_num_threads(num_threads);
+
+	split(a, b, 0, num_elements);
 
 	free(b);
 }
