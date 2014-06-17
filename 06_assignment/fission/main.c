@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
 	compute(a, b, c, d, N);
 	clock_gettime(CLOCK_REALTIME, &end);
 
-	printf("\nProcessing Time: %.3lf seconds", ts_to_double(ts_diff(begin, end)));
+	printf("\nProcessing Time: %.3lf seconds\n", ts_to_double(ts_diff(begin, end)));
 	
 	free(a);
 	free(b);
