@@ -95,41 +95,38 @@ int main(int argc, char *argv[])
 
     if(comm_rank == 0)
     {
+		size_t size = sizeof(unsigned char) * dim_x * dim_y;
+		grid = malloc(size);
 
-	size_t size = sizeof(unsigned char) * dim_x * dim_y;
-	grid = malloc(size);
+		if(grid == NULL)
+			exit(EXIT_FAILURE);
 
-	if(grid == NULL)
-		exit(EXIT_FAILURE);
+		memset(grid, 0, size);
 
-	memset(grid, 0, size);
+		r_pentomino(grid, dim_x, dim_y, dim_x/2, dim_y/2);
 
-	r_pentomino(grid, dim_x, dim_y, dim_x/2, dim_y/2);
+		printf("\nGame of Life: time_steps = %u; dim_x = %u; dim_y = %u; processes = %d \n\n", time_steps, dim_x, dim_y, comm_size);
 
-	printf("\nGame of Life: time_steps = %u; dim_x = %u; dim_y = %u; processes = %d \n\n", time_steps, dim_x, dim_y, comm_size);
+		print_gol(grid, dim_x, dim_y);
 
-	print_gol(grid, dim_x, dim_y);
+		printf("\n\n");
 
-	printf("\n\n");
-
-	clock_gettime(CLOCK_REALTIME, &begin);
+		clock_gettime(CLOCK_REALTIME, &begin);
     }
 
     unsigned int living_cells = gol(grid, dim_x, dim_y, time_steps);
 
     if(comm_rank == 0)
     {
+		clock_gettime(CLOCK_REALTIME, &end);
 
-	clock_gettime(CLOCK_REALTIME, &end);
+		print_gol(grid, dim_x, dim_y);
 
-	print_gol(grid, dim_x, dim_y);
+		printf("Living Cells after %u time steps: %u\n", time_steps, living_cells);
 
-	printf("Living Cells after %u time steps: %u\n", time_steps, living_cells);
+		printf("\nProcessing Time: %.3lf seconds\n", ts_to_double(ts_diff(begin, end)));
 
-	printf("\nProcessing Time: %.3lf seconds\n", ts_to_double(ts_diff(begin, end)));
-
-	free(grid);
-
+		free(grid);
     }
 
     MPI_Finalize();

@@ -12,3 +12,4 @@ Assignments
 4. (a) Estimate pi and (b) count prime numbers using OpenMP.
 5. Merge sort using OpenMP (a) undeferred tasks and (b) nested sections.
 6. Loop (a) fission, (b) alignment, and (c) fusion using OpenMP.
+7. Simulate Conway's Game of Life using MPI.
