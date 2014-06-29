@@ -1,11 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <pthread.h>
+#include <mpi.h>
 
 #include "helper.h"
-
-#include <mpi.h>
 
 extern int comm_size, comm_rank;
 
@@ -33,12 +31,9 @@ void evolve(unsigned char *grid_in, unsigned char *grid_out, unsigned char *ghos
 	{
 		if(c_grid_in[y][x - 1] == 1) 			{ aliveNeighborCnt++; }
 		if(c_grid_in[y][x + 1] == 1) 			{ aliveNeighborCnt++; }
-//		if(c_grid_in[dim_y - 1][x] == 1)		{ aliveNeighborCnt++; } //
 		if(c_ghost_cells[0][x] == 1)			{ aliveNeighborCnt++; } //
 		if(c_grid_in[y + 1][x] == 1)			{ aliveNeighborCnt++; }
 
-//		if(c_grid_in[dim_y - 1][x - 1] == 1) 	{ aliveNeighborCnt++; } //
-//		if(c_grid_in[dim_y - 1][x + 1] == 1) 	{ aliveNeighborCnt++; } //
 		if(c_ghost_cells[0][x - 1] == 1) 		{ aliveNeighborCnt++; } //
 		if(c_ghost_cells[0][x + 1] == 1) 		{ aliveNeighborCnt++; } //
 		if(c_grid_in[y + 1][x - 1] == 1)		{ aliveNeighborCnt++; }
@@ -49,13 +44,10 @@ void evolve(unsigned char *grid_in, unsigned char *grid_out, unsigned char *ghos
 		if(c_grid_in[y][x - 1] == 1) 			{ aliveNeighborCnt++; }
 		if(c_grid_in[y][x + 1] == 1) 			{ aliveNeighborCnt++; }
 		if(c_grid_in[y - 1][x] == 1)			{ aliveNeighborCnt++; }
-//		if(c_grid_in[0][x] == 1)				{ aliveNeighborCnt++; } //
 		if(c_ghost_cells[1][x] == 1)			{ aliveNeighborCnt++; } //
 
 		if(c_grid_in[y - 1][x - 1] == 1) 		{ aliveNeighborCnt++; }
 		if(c_grid_in[y - 1][x + 1] == 1) 		{ aliveNeighborCnt++; }
-//		if(c_grid_in[0][x - 1] == 1)			{ aliveNeighborCnt++; } //
-//		if(c_grid_in[0][x + 1] == 1)			{ aliveNeighborCnt++; } //
 		if(c_ghost_cells[1][x - 1] == 1)		{ aliveNeighborCnt++; } //
 		if(c_ghost_cells[1][x + 1] == 1)		{ aliveNeighborCnt++; } //
 	}
@@ -87,12 +79,9 @@ void evolve(unsigned char *grid_in, unsigned char *grid_out, unsigned char *ghos
 	{
 		if(c_grid_in[y][dim_x - 1] == 1) 		{ aliveNeighborCnt++; } //
 		if(c_grid_in[y][x + 1] == 1) 			{ aliveNeighborCnt++; }
-//		if(c_grid_in[dim_y - 1][x] == 1)		{ aliveNeighborCnt++; } //
 		if(c_ghost_cells[0][x] == 1)			{ aliveNeighborCnt++; } //
 		if(c_grid_in[y + 1][x] == 1)			{ aliveNeighborCnt++; }
 
-//		if(c_grid_in[dim_y - 1][dim_x - 1] == 1){ aliveNeighborCnt++; } //
-//		if(c_grid_in[dim_y - 1][x + 1] == 1) 	{ aliveNeighborCnt++; } //
 		if(c_ghost_cells[0][dim_x - 1] == 1)	{ aliveNeighborCnt++; } //
 		if(c_ghost_cells[0][x + 1] == 1)		{ aliveNeighborCnt++; } //
 		if(c_grid_in[y + 1][dim_x - 1] == 1)	{ aliveNeighborCnt++; } //
@@ -103,13 +92,10 @@ void evolve(unsigned char *grid_in, unsigned char *grid_out, unsigned char *ghos
 		if(c_grid_in[y][dim_x - 1] == 1) 		{ aliveNeighborCnt++; } //
 		if(c_grid_in[y][x + 1] == 1) 			{ aliveNeighborCnt++; }
 		if(c_grid_in[y - 1][x] == 1)			{ aliveNeighborCnt++; }
-//		if(c_grid_in[0][x] == 1)				{ aliveNeighborCnt++; } //
 		if(c_ghost_cells[1][x] == 1)			{ aliveNeighborCnt++; } //
 
 		if(c_grid_in[y - 1][dim_x - 1] == 1) 	{ aliveNeighborCnt++; } //
 		if(c_grid_in[y - 1][x + 1] == 1) 		{ aliveNeighborCnt++; }
-//		if(c_grid_in[0][dim_x - 1] == 1)		{ aliveNeighborCnt++; } //
-//		if(c_grid_in[0][x + 1] == 1)			{ aliveNeighborCnt++; } //
 		if(c_ghost_cells[1][dim_x - 1] == 1)	{ aliveNeighborCnt++; } //
 		if(c_ghost_cells[1][x + 1] == 1)		{ aliveNeighborCnt++; } //
 	}
@@ -117,12 +103,9 @@ void evolve(unsigned char *grid_in, unsigned char *grid_out, unsigned char *ghos
 	{
 		if(c_grid_in[y][x - 1] == 1) 			{ aliveNeighborCnt++; }
 		if(c_grid_in[y][0] == 1)	 			{ aliveNeighborCnt++; } //
-//		if(c_grid_in[dim_y - 1][x] == 1)		{ aliveNeighborCnt++; } //
 		if(c_ghost_cells[0][x] == 1)			{ aliveNeighborCnt++; } //
 		if(c_grid_in[y + 1][x] == 1)			{ aliveNeighborCnt++; }
 
-//		if(c_grid_in[dim_y - 1][x - 1] == 1)	{ aliveNeighborCnt++; } //
-//		if(c_grid_in[dim_y - 1][0] == 1) 		{ aliveNeighborCnt++; } //
 		if(c_ghost_cells[0][x - 1] == 1)		{ aliveNeighborCnt++; } //
 		if(c_ghost_cells[0][0] == 1)			{ aliveNeighborCnt++; } //
 		if(c_grid_in[y + 1][x - 1] == 1)		{ aliveNeighborCnt++; }
@@ -133,13 +116,10 @@ void evolve(unsigned char *grid_in, unsigned char *grid_out, unsigned char *ghos
 		if(c_grid_in[y][x - 1] == 1) 			{ aliveNeighborCnt++; }
 		if(c_grid_in[y][0] == 1) 				{ aliveNeighborCnt++; } //
 		if(c_grid_in[y - 1][x] == 1)			{ aliveNeighborCnt++; }
-//		if(c_grid_in[0][x] == 1)				{ aliveNeighborCnt++; } //
 		if(c_ghost_cells[1][x] == 1)			{ aliveNeighborCnt++; } //
 
 		if(c_grid_in[y - 1][x - 1] == 1) 		{ aliveNeighborCnt++; }
 		if(c_grid_in[y - 1][0] == 1) 			{ aliveNeighborCnt++; } //
-//		if(c_grid_in[0][x - 1] == 1)			{ aliveNeighborCnt++; } //
-//		if(c_grid_in[0][0] == 1)				{ aliveNeighborCnt++; } //
 		if(c_ghost_cells[1][x - 1] == 1)		{ aliveNeighborCnt++; } //
 		if(c_ghost_cells[1][0] == 1)			{ aliveNeighborCnt++; } //
 	}
@@ -166,10 +146,8 @@ void swap(unsigned char **a, unsigned char **b)
 	*b = tmp;
 }
 
-void cell_comm(unsigned char *grid, unsigned char *ghost_cells, unsigned int dim_x, unsigned int dim_y)
+void cell_comm(unsigned char *grid, unsigned char *ghost_cells, unsigned char *send_buf, unsigned char *recv_buf, unsigned int dim_x, unsigned int dim_y)
 {
-	unsigned char *send_buf = malloc(sizeof(unsigned char)*dim_x);
-	unsigned char *recv_buf = malloc(sizeof(unsigned char)*dim_x);
 	int top_rank, bottom_rank;
 
 	// Determine neighboring ranks
@@ -218,19 +196,19 @@ void cell_comm(unsigned char *grid, unsigned char *ghost_cells, unsigned int dim
 	{
 		ghost_cells[x] = recv_buf[x];
 	}
-
-	free(send_buf);
-	free(recv_buf);
 }
 
 unsigned int gol(unsigned char *grid, unsigned int dim_x, unsigned int dim_y, unsigned int time_steps)
 {
-	unsigned char *grid_in, *grid_out, *ghost_cells; //, *grid_temp;
-	int *grid_size, *grid_disp, num_rows, rem_rows, i, loc_dim_y;
+	unsigned char *grid_in, *grid_out;
+	int num_rows, rem_rows, loc_dim_y;
+	int i = 0;
 
-	grid_size 	 = malloc(sizeof(unsigned int)*comm_size);
-	grid_disp 	 = malloc(sizeof(unsigned int)*comm_size);
-	ghost_cells = malloc(sizeof(unsigned char)*2*dim_x);
+	int *grid_size 	 	= malloc(sizeof(unsigned int)*comm_size);
+	int *grid_disp		= malloc(sizeof(unsigned int)*comm_size);
+	unsigned char *ghost_cells = malloc(sizeof(unsigned char)*2*dim_x);
+	unsigned char *send_buf = malloc(sizeof(unsigned char)*dim_x);
+	unsigned char *recv_buf = malloc(sizeof(unsigned char)*dim_x);
 
 	// Based on rank and processor count, determine grid decomposition
 	num_rows = dim_y / comm_size;
@@ -252,7 +230,6 @@ unsigned int gol(unsigned char *grid, unsigned int dim_x, unsigned int dim_y, un
 		grid_size[i] = sizeof(unsigned char)*dim_x*num_rows;
 		grid_disp[i] = i*sizeof(unsigned char)*dim_x*num_rows;
 	}
-	// Give the last rank the remainder rows (if they exist)
 	grid_size[comm_size-1] = sizeof(unsigned char)*dim_x*(num_rows + rem_rows);
 	grid_disp[comm_size-1] = i*sizeof(unsigned char)*dim_x*num_rows;
 
@@ -261,11 +238,24 @@ unsigned int gol(unsigned char *grid, unsigned int dim_x, unsigned int dim_y, un
 	grid_out = malloc(grid_size[comm_rank]);
 	memset(grid_out, 0, grid_size[comm_rank]);
 
-	// Scatter global grid data to local grids
-	MPI_Scatterv(grid, grid_size, grid_disp, MPI_CHAR, grid_in, grid_size[comm_rank], MPI_CHAR, 0, MPI_COMM_WORLD);
+	if(comm_size > 1)
+	{
+		// Scatter global grid data to local grids
+		MPI_Scatterv(grid, grid_size, grid_disp, MPI_CHAR, grid_in, grid_size[comm_rank], MPI_CHAR, 0, MPI_COMM_WORLD);
 
-	// Communicate neighboring cells before iteration scheme
-	cell_comm(grid_in, ghost_cells, dim_x, loc_dim_y);
+		// Communicate neighboring cells before iteration scheme
+		cell_comm(grid_in, ghost_cells, send_buf, recv_buf, dim_x, loc_dim_y);
+	}
+	else
+	{
+		memcpy(grid_in, grid, grid_size[comm_rank]);
+
+		for(int x = 0; x < dim_x; x++)
+		{
+			ghost_cells[x] = grid_in[x + dim_x*(dim_y - 1)];
+			ghost_cells[x + dim_x] = grid_in[x];
+		}
+	}
 
 	// Progress through time and update cell states
 	for (int t = 0; t < time_steps; ++t)
@@ -278,18 +268,39 @@ unsigned int gol(unsigned char *grid, unsigned int dim_x, unsigned int dim_y, un
 			}
 		}
 
-		// Communicate neighboring cells then swap local in/out grids
-		cell_comm(grid_out, ghost_cells, dim_x, loc_dim_y);
+		if(comm_size > 1)
+		{
+			// Communicate neighboring cells then swap local in/out grids
+			cell_comm(grid_out, ghost_cells, send_buf, recv_buf, dim_x, loc_dim_y);
+		}
+		else
+		{
+			for(int x = 0; x < dim_x; x++)
+			{
+				ghost_cells[x] = grid_in[x + dim_x*(dim_y - 1)];
+				ghost_cells[x + dim_x] = grid_in[x];
+			}
+		}
+
 		swap(&grid_in, &grid_out);
 	}
 
-	// Gather local grids into global grid
-	MPI_Gatherv(grid_in, grid_size[comm_rank], MPI_CHAR, grid, grid_size, grid_disp, MPI_CHAR, 0, MPI_COMM_WORLD);
+	if(comm_size > 1)
+	{
+		// Gather local grids into global grid
+		MPI_Gatherv(grid_in, grid_size[comm_rank], MPI_CHAR, grid, grid_size, grid_disp, MPI_CHAR, 0, MPI_COMM_WORLD);
+	}
+	else
+	{
+		memcpy(grid, grid_in, grid_size[comm_rank]);
+	}
 
 	free(grid_size);
 	free(grid_disp);
 	free(grid_in);
 	free(grid_out);
+	free(send_buf);
+	free(recv_buf);
 
 	return 0;
 }
