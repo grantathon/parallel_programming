@@ -17,111 +17,111 @@ void evolve(unsigned char *grid_in, unsigned char *grid_out, unsigned char *ghos
 	// Avoid references outside of the grid
 	if(x > 0 && x < (dim_x - 1) && y > 0 && y < (dim_y - 1))  // Inner cells
 	{
-		if(c_grid_in[y][x - 1] == 1) 		{ aliveNeighborCnt++; }
-		if(c_grid_in[y][x + 1] == 1) 		{ aliveNeighborCnt++; }
-		if(c_grid_in[y - 1][x] == 1)		{ aliveNeighborCnt++; }
-		if(c_grid_in[y + 1][x] == 1)		{ aliveNeighborCnt++; }
+		if(c_grid_in[y][x - 1] == 1) 	aliveNeighborCnt++;
+		if(c_grid_in[y][x + 1] == 1)	aliveNeighborCnt++;
+		if(c_grid_in[y - 1][x] == 1)	aliveNeighborCnt++;
+		if(c_grid_in[y + 1][x] == 1)	aliveNeighborCnt++;
 
-		if(c_grid_in[y - 1][x - 1] == 1) 	{ aliveNeighborCnt++; }
-		if(c_grid_in[y - 1][x + 1] == 1) 	{ aliveNeighborCnt++; }
-		if(c_grid_in[y + 1][x - 1] == 1)	{ aliveNeighborCnt++; }
-		if(c_grid_in[y + 1][x + 1] == 1)	{ aliveNeighborCnt++; }
+		if(c_grid_in[y - 1][x - 1] == 1)	aliveNeighborCnt++;
+		if(c_grid_in[y - 1][x + 1] == 1) 	aliveNeighborCnt++;
+		if(c_grid_in[y + 1][x - 1] == 1)	aliveNeighborCnt++;
+		if(c_grid_in[y + 1][x + 1] == 1)	aliveNeighborCnt++;
 	}
 	else if(x > 0 && x < (dim_x - 1) && y == 0)  // Top border cells //
 	{
-		if(c_grid_in[y][x - 1] == 1) 			{ aliveNeighborCnt++; }
-		if(c_grid_in[y][x + 1] == 1) 			{ aliveNeighborCnt++; }
-		if(c_ghost_cells[0][x] == 1)			{ aliveNeighborCnt++; } //
-		if(c_grid_in[y + 1][x] == 1)			{ aliveNeighborCnt++; }
+		if(c_grid_in[y][x - 1] == 1)	aliveNeighborCnt++;
+		if(c_grid_in[y][x + 1] == 1) 	aliveNeighborCnt++;
+		if(c_ghost_cells[0][x] == 1)	aliveNeighborCnt++;
+		if(c_grid_in[y + 1][x] == 1)	aliveNeighborCnt++;
 
-		if(c_ghost_cells[0][x - 1] == 1) 		{ aliveNeighborCnt++; } //
-		if(c_ghost_cells[0][x + 1] == 1) 		{ aliveNeighborCnt++; } //
-		if(c_grid_in[y + 1][x - 1] == 1)		{ aliveNeighborCnt++; }
-		if(c_grid_in[y + 1][x + 1] == 1)		{ aliveNeighborCnt++; }
+		if(c_ghost_cells[0][x - 1] == 1)	aliveNeighborCnt++;
+		if(c_ghost_cells[0][x + 1] == 1) 	aliveNeighborCnt++;
+		if(c_grid_in[y + 1][x - 1] == 1)	aliveNeighborCnt++;
+		if(c_grid_in[y + 1][x + 1] == 1)	aliveNeighborCnt++;
 	}
 	else if(x > 0 && x < (dim_x - 1) && y == (dim_y - 1))  // Bottom border cells //
 	{
-		if(c_grid_in[y][x - 1] == 1) 			{ aliveNeighborCnt++; }
-		if(c_grid_in[y][x + 1] == 1) 			{ aliveNeighborCnt++; }
-		if(c_grid_in[y - 1][x] == 1)			{ aliveNeighborCnt++; }
-		if(c_ghost_cells[1][x] == 1)			{ aliveNeighborCnt++; } //
+		if(c_grid_in[y][x - 1] == 1)	aliveNeighborCnt++;
+		if(c_grid_in[y][x + 1] == 1) 	aliveNeighborCnt++;
+		if(c_grid_in[y - 1][x] == 1)	aliveNeighborCnt++;
+		if(c_ghost_cells[1][x] == 1)	aliveNeighborCnt++;
 
-		if(c_grid_in[y - 1][x - 1] == 1) 		{ aliveNeighborCnt++; }
-		if(c_grid_in[y - 1][x + 1] == 1) 		{ aliveNeighborCnt++; }
-		if(c_ghost_cells[1][x - 1] == 1)		{ aliveNeighborCnt++; } //
-		if(c_ghost_cells[1][x + 1] == 1)		{ aliveNeighborCnt++; } //
+		if(c_grid_in[y - 1][x - 1] == 1)	aliveNeighborCnt++;
+		if(c_grid_in[y - 1][x + 1] == 1) 	aliveNeighborCnt++;
+		if(c_ghost_cells[1][x - 1] == 1)	aliveNeighborCnt++;
+		if(c_ghost_cells[1][x + 1] == 1)	aliveNeighborCnt++;
 	}
 	else if(x == 0 && y > 0 && y < (dim_y - 1))  // Left border cells //
 	{
-		if(c_grid_in[y][dim_x - 1] == 1) 		{ aliveNeighborCnt++; } //
-		if(c_grid_in[y][x + 1] == 1) 			{ aliveNeighborCnt++; }
-		if(c_grid_in[y - 1][x] == 1)			{ aliveNeighborCnt++; }
-		if(c_grid_in[y + 1][x] == 1)			{ aliveNeighborCnt++; }
+		if(c_grid_in[y][dim_x - 1] == 1) 		aliveNeighborCnt++;
+		if(c_grid_in[y][x + 1] == 1) 			aliveNeighborCnt++;
+		if(c_grid_in[y - 1][x] == 1)			aliveNeighborCnt++;
+		if(c_grid_in[y + 1][x] == 1)			aliveNeighborCnt++;
 
-		if(c_grid_in[y - 1][dim_x - 1] == 1) 	{ aliveNeighborCnt++; } //
-		if(c_grid_in[y - 1][x + 1] == 1) 		{ aliveNeighborCnt++; }
-		if(c_grid_in[y + 1][dim_x - 1] == 1)	{ aliveNeighborCnt++; } //
-		if(c_grid_in[y + 1][x + 1] == 1)		{ aliveNeighborCnt++; }
+		if(c_grid_in[y - 1][dim_x - 1] == 1) 	aliveNeighborCnt++;
+		if(c_grid_in[y - 1][x + 1] == 1) 		aliveNeighborCnt++;
+		if(c_grid_in[y + 1][dim_x - 1] == 1)	aliveNeighborCnt++;
+		if(c_grid_in[y + 1][x + 1] == 1)		aliveNeighborCnt++;
 	}
 	else if(x == (dim_x - 1) && y > 0 && y < (dim_y - 1))  // Right border cells //
 	{
-		if(c_grid_in[y][x - 1] == 1) 			{ aliveNeighborCnt++; }
-		if(c_grid_in[y][0] == 1) 				{ aliveNeighborCnt++; } //
-		if(c_grid_in[y - 1][x] == 1)			{ aliveNeighborCnt++; }
-		if(c_grid_in[y + 1][x] == 1)			{ aliveNeighborCnt++; }
+		if(c_grid_in[y][x - 1] == 1) 			aliveNeighborCnt++;
+		if(c_grid_in[y][0] == 1) 				aliveNeighborCnt++;
+		if(c_grid_in[y - 1][x] == 1)			aliveNeighborCnt++;
+		if(c_grid_in[y + 1][x] == 1)			aliveNeighborCnt++;
 
-		if(c_grid_in[y - 1][x - 1] == 1) 		{ aliveNeighborCnt++; }
-		if(c_grid_in[y - 1][0] == 1) 			{ aliveNeighborCnt++; } //
-		if(c_grid_in[y + 1][x - 1] == 1)		{ aliveNeighborCnt++; }
-		if(c_grid_in[y + 1][0] == 1)			{ aliveNeighborCnt++; } //
+		if(c_grid_in[y - 1][x - 1] == 1) 		aliveNeighborCnt++;
+		if(c_grid_in[y - 1][0] == 1) 			aliveNeighborCnt++;
+		if(c_grid_in[y + 1][x - 1] == 1)		aliveNeighborCnt++;
+		if(c_grid_in[y + 1][0] == 1)			aliveNeighborCnt++;
 	}
 	else if(x == 0 && y == 0)  // Top left corner cell //
 	{
-		if(c_grid_in[y][dim_x - 1] == 1) 		{ aliveNeighborCnt++; } //
-		if(c_grid_in[y][x + 1] == 1) 			{ aliveNeighborCnt++; }
-		if(c_ghost_cells[0][x] == 1)			{ aliveNeighborCnt++; } //
-		if(c_grid_in[y + 1][x] == 1)			{ aliveNeighborCnt++; }
+		if(c_grid_in[y][dim_x - 1] == 1) 		aliveNeighborCnt++;
+		if(c_grid_in[y][x + 1] == 1) 			aliveNeighborCnt++;
+		if(c_ghost_cells[0][x] == 1)			aliveNeighborCnt++;
+		if(c_grid_in[y + 1][x] == 1)			aliveNeighborCnt++;
 
-		if(c_ghost_cells[0][dim_x - 1] == 1)	{ aliveNeighborCnt++; } //
-		if(c_ghost_cells[0][x + 1] == 1)		{ aliveNeighborCnt++; } //
-		if(c_grid_in[y + 1][dim_x - 1] == 1)	{ aliveNeighborCnt++; } //
-		if(c_grid_in[y + 1][x + 1] == 1)		{ aliveNeighborCnt++; }
+		if(c_ghost_cells[0][dim_x - 1] == 1)	aliveNeighborCnt++;
+		if(c_ghost_cells[0][x + 1] == 1)		aliveNeighborCnt++;
+		if(c_grid_in[y + 1][dim_x - 1] == 1)	aliveNeighborCnt++;
+		if(c_grid_in[y + 1][x + 1] == 1)		aliveNeighborCnt++;
 	}
 	else if(x == 0 && y == (dim_y - 1))  // Bottom left corner cell //
 	{
-		if(c_grid_in[y][dim_x - 1] == 1) 		{ aliveNeighborCnt++; } //
-		if(c_grid_in[y][x + 1] == 1) 			{ aliveNeighborCnt++; }
-		if(c_grid_in[y - 1][x] == 1)			{ aliveNeighborCnt++; }
-		if(c_ghost_cells[1][x] == 1)			{ aliveNeighborCnt++; } //
+		if(c_grid_in[y][dim_x - 1] == 1) 		aliveNeighborCnt++;
+		if(c_grid_in[y][x + 1] == 1) 			aliveNeighborCnt++;
+		if(c_grid_in[y - 1][x] == 1)			aliveNeighborCnt++;
+		if(c_ghost_cells[1][x] == 1)			aliveNeighborCnt++;
 
-		if(c_grid_in[y - 1][dim_x - 1] == 1) 	{ aliveNeighborCnt++; } //
-		if(c_grid_in[y - 1][x + 1] == 1) 		{ aliveNeighborCnt++; }
-		if(c_ghost_cells[1][dim_x - 1] == 1)	{ aliveNeighborCnt++; } //
-		if(c_ghost_cells[1][x + 1] == 1)		{ aliveNeighborCnt++; } //
+		if(c_grid_in[y - 1][dim_x - 1] == 1) 	aliveNeighborCnt++;
+		if(c_grid_in[y - 1][x + 1] == 1) 		aliveNeighborCnt++;
+		if(c_ghost_cells[1][dim_x - 1] == 1)	aliveNeighborCnt++;
+		if(c_ghost_cells[1][x + 1] == 1)		aliveNeighborCnt++;
 	}
 	else if(x == (dim_x - 1) && y == 0)  // Top right corner cell //
 	{
-		if(c_grid_in[y][x - 1] == 1) 			{ aliveNeighborCnt++; }
-		if(c_grid_in[y][0] == 1)	 			{ aliveNeighborCnt++; } //
-		if(c_ghost_cells[0][x] == 1)			{ aliveNeighborCnt++; } //
-		if(c_grid_in[y + 1][x] == 1)			{ aliveNeighborCnt++; }
+		if(c_grid_in[y][x - 1] == 1) 			aliveNeighborCnt++;
+		if(c_grid_in[y][0] == 1)	 			aliveNeighborCnt++;
+		if(c_ghost_cells[0][x] == 1)			aliveNeighborCnt++;
+		if(c_grid_in[y + 1][x] == 1)			aliveNeighborCnt++;
 
-		if(c_ghost_cells[0][x - 1] == 1)		{ aliveNeighborCnt++; } //
-		if(c_ghost_cells[0][0] == 1)			{ aliveNeighborCnt++; } //
-		if(c_grid_in[y + 1][x - 1] == 1)		{ aliveNeighborCnt++; }
-		if(c_grid_in[y + 1][0] == 1)			{ aliveNeighborCnt++; } //
+		if(c_ghost_cells[0][x - 1] == 1)		aliveNeighborCnt++;
+		if(c_ghost_cells[0][0] == 1)			aliveNeighborCnt++;
+		if(c_grid_in[y + 1][x - 1] == 1)		aliveNeighborCnt++;
+		if(c_grid_in[y + 1][0] == 1)			aliveNeighborCnt++;
 	}
 	else if(x == (dim_x - 1) && y == (dim_y - 1))  // Bottom right corner cell //
 	{
-		if(c_grid_in[y][x - 1] == 1) 			{ aliveNeighborCnt++; }
-		if(c_grid_in[y][0] == 1) 				{ aliveNeighborCnt++; } //
-		if(c_grid_in[y - 1][x] == 1)			{ aliveNeighborCnt++; }
-		if(c_ghost_cells[1][x] == 1)			{ aliveNeighborCnt++; } //
+		if(c_grid_in[y][x - 1] == 1) 			aliveNeighborCnt++;
+		if(c_grid_in[y][0] == 1) 				aliveNeighborCnt++;
+		if(c_grid_in[y - 1][x] == 1)			aliveNeighborCnt++;
+		if(c_ghost_cells[1][x] == 1)			aliveNeighborCnt++;
 
-		if(c_grid_in[y - 1][x - 1] == 1) 		{ aliveNeighborCnt++; }
-		if(c_grid_in[y - 1][0] == 1) 			{ aliveNeighborCnt++; } //
-		if(c_ghost_cells[1][x - 1] == 1)		{ aliveNeighborCnt++; } //
-		if(c_ghost_cells[1][0] == 1)			{ aliveNeighborCnt++; } //
+		if(c_grid_in[y - 1][x - 1] == 1) 		aliveNeighborCnt++;
+		if(c_grid_in[y - 1][0] == 1) 			aliveNeighborCnt++;
+		if(c_ghost_cells[1][x - 1] == 1)		aliveNeighborCnt++;
+		if(c_ghost_cells[1][0] == 1)			aliveNeighborCnt++;
 	}
 
 	// Determine new cell state
